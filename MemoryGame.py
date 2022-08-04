@@ -54,6 +54,7 @@ class Tile():
         #disables the button so the player can't just click the button twice to add the same tile to Variables.choices
         self.button['state'] = "disabled"
         
+        #Debug
         #print (self.text)
         
         Variables.choices.append(self)
@@ -74,7 +75,8 @@ class Play():
         self.gameArray = list()  #creates the list to be shuffled.
         self.gameTiles = list() #creates the list for the tiles.
         
-        print(Variables.difficulty)
+        #Debug
+        #print(Variables.difficulty)
         
         self.make_game_board()
         
@@ -88,9 +90,15 @@ class Play():
         
         #creates a tile for each item in the gameArray.
         #breaks the tiles into x,y pos. 5 tiles per row.
+        
+        if Variables().difficulty == 5:
+            columns = 5
+        else:
+            columns = 10
+        
         for i in range(len(self.gameArray)):
-            row = i//5
-            column = i%5
+            row = i//columns
+            column = i%columns
             text=self.gameArray[i]
             
             #creates the Tile object and assigns it a vaule, and grid location.
@@ -100,10 +108,13 @@ class Play():
             
             Variables.remainingTiles = len(self.gameTiles)
             
+            #Debug
             #print(newTile.text, newTile.row, newTile.column)
             
     def check_choice(self):
         time.sleep(1) #leaves both tiles visable for the player to see for a second.
+        
+        #Debug
         #Variables.remainingTiles = 0
         
         choices = Variables.choices
