@@ -67,7 +67,7 @@ class Play():
     def __init__(self,master):
         self.master = master
         self.gameBoard = TK.Frame(self.master)
-        self.gameBoard.pack(fill=TK.BOTH)
+        self.gameBoard.pack(pady=10)
     
         self.gameArray = list()  #creates the list to be shuffled.
         self.gameTiles = list() #creates the list for the tiles.
@@ -107,11 +107,16 @@ class Play():
             
             #Debug
             #print(newTile.text, newTile.row, newTile.column)
+        
+        self.exitButton = TK.Button(self.master, text="Exit", width=20, pady=10, command=lambda: Variables.root.destroy())
+        self.exitButton.pack(pady=5)
             
     def end_game(self):
         #destroys all the tile objects.
         for tile in self.gameTiles:
             tile.finish()
+        
+        self.exitButton.destroy()
         
         #displays a finish message.
         TK.Label(self.gameBoard, text = "!!!YOU WON!!!").pack(fill=TK.BOTH)
