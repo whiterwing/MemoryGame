@@ -28,6 +28,7 @@ class Variables():
         self.difficulty = Difficulty_menu(master)
     
     def start_game(self, master):
+        #Since Play.check_choice is ran from a tile, this needs to be here to call Play.end_game from check_choice.
         self.play = Play(master)
 
 
@@ -48,13 +49,16 @@ class Tile():
         self.button.pack()
         
     def pressed(self):
+        #set the background to white so the player can see the number.
         self.button['bg'] = "White"
+        #disables the button so the player can't just click the button twice to add the same tile to Variables.choices
         self.button['state'] = "disabled"
-        print (self.text)
-        if len(Variables.choices) == 0:
-            Variables.choices.append(self)
-        else:
-            Variables.choices.append(self)
+        
+        #print (self.text)
+        
+        Variables.choices.append(self)
+        
+        if len(Variables.choices) == 2:
             Play.check_choice(self)
             
     def finish(self):
@@ -69,6 +73,7 @@ class Play():
     
         self.gameArray = list()  #creates the list to be shuffled.
         self.gameTiles = list() #creates the list for the tiles.
+        
         print(Variables.difficulty)
         
         self.make_game_board()
@@ -79,11 +84,7 @@ class Play():
             self.gameArray.append(num)
             self.gameArray.append(num)
             
-        #shuffle's the array twice to make it a little more random.
-        shuffleCount = 2
-        while shuffleCount:
-            random.shuffle(self.gameArray)
-            shuffleCount -= 1
+        random.shuffle(self.gameArray)
         
         #creates a tile for each item in the gameArray.
         #breaks the tiles into x,y pos. 5 tiles per row.
@@ -93,18 +94,22 @@ class Play():
             text=self.gameArray[i]
             
             #creates the Tile object and assigns it a vaule, and grid location.
-            #creating the tile, then adding it to array for testing reasons.
+            #creating the tile, then adding it to an array.
             newTile = Tile(self.gameBoard, text, row, column)
             self.gameTiles.append(newTile)
             
             Variables.remainingTiles = len(self.gameTiles)
-            print(newTile.text, newTile.row, newTile.column)
+            
+            #print(newTile.text, newTile.row, newTile.column)
             
     def check_choice(self):
-        time.sleep(1)
+        time.sleep(1) #leaves both tiles visable for the player to see for a second.
         #Variables.remainingTiles = 0
         
         choices = Variables.choices
+        
+        #if the tiles don't match, hide the value, and let the player click it again.
+        #otherwise clear the choices list, and decrement the remainingTiles counter.
         if choices[0].text != choices[1].text:
             choices[0].button['bg'] = "Black"
             choices[0].button['state'] = "normal"
@@ -112,21 +117,23 @@ class Play():
             choices[1].button['state'] = "normal"
             Variables.choices = list()
         else:
-            choices[0].button['state'] = "disabled"
-            choices[1].button['state'] = "disabled"
             Variables.choices = list()
             Variables.remainingTiles -=2
 
+        #if there are no tiles left, end the game.
         if Variables.remainingTiles == 0:
-            Variables.play.endGame()
+            Variables.play.end_game()
             
-    def endGame(self):
+    def end_game(self):
+        #destroys all the tile objects.
         for tile in self.gameTiles:
             tile.finish()
         
+        #displays a finish message.
         self.label = TK.Label(self.gameBoard, text = "!!!YOU WON!!!")
         self.label.pack(fill=TK.BOTH)
 
+        #creates a pop up to ask if the user wants to play again, returns a bool.
         self.alertBox = TK.messagebox.askyesno("Continue", "Do you want to play again?")
         
         self.gameBoard.destroy()
