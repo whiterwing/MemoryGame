@@ -24,11 +24,8 @@ class Variables():
     remainingTiles = 0
     root = None
     
-    def pre_game(self, master):
-        self.difficulty = Difficulty_menu(master)
-    
     def start_game(self, master):
-        #Since Play.check_choice is ran from a tile, this needs to be here to call Play.end_game from check_choice.
+        #Since check_choice is ran from a tile, this needs to be here to call Play.end_game from check_choice.
         self.play = Play(master)
 
 
@@ -60,7 +57,7 @@ class Tile():
         Variables.choices.append(self)
         
         if len(Variables.choices) == 2:
-            Play.check_choice(self)
+            check_choice()
             
     def finish(self):
         self.tileFrame.destroy()
@@ -89,7 +86,7 @@ class Play():
         random.shuffle(self.gameArray)
         
         #creates a tile for each item in the gameArray.
-        #breaks the tiles into x,y pos. 5 tiles per row.
+        #breaks the tiles into x,y pos. 5 or 10 tiles per row.
         
         if Variables().difficulty == 5:
             columns = 5
@@ -111,38 +108,13 @@ class Play():
             #Debug
             #print(newTile.text, newTile.row, newTile.column)
             
-    def check_choice(self):
-        time.sleep(1) #leaves both tiles visable for the player to see for a second.
-        
-        #Debug
-        #Variables.remainingTiles = 0
-        
-        choices = Variables.choices
-        
-        #if the tiles don't match, hide the value, and let the player click it again.
-        #otherwise clear the choices list, and decrement the remainingTiles counter.
-        if choices[0].text != choices[1].text:
-            choices[0].button['bg'] = "Black"
-            choices[0].button['state'] = "normal"
-            choices[1].button['bg'] = "Black"
-            choices[1].button['state'] = "normal"
-            Variables.choices = list()
-        else:
-            Variables.choices = list()
-            Variables.remainingTiles -=2
-
-        #if there are no tiles left, end the game.
-        if Variables.remainingTiles == 0:
-            Variables.play.end_game()
-            
     def end_game(self):
         #destroys all the tile objects.
         for tile in self.gameTiles:
             tile.finish()
         
         #displays a finish message.
-        self.label = TK.Label(self.gameBoard, text = "!!!YOU WON!!!")
-        self.label.pack(fill=TK.BOTH)
+        TK.Label(self.gameBoard, text = "!!!YOU WON!!!").pack(fill=TK.BOTH)
 
         #creates a pop up to ask if the user wants to play again, returns a bool.
         self.alertBox = TK.messagebox.askyesno("Continue", "Do you want to play again?")
@@ -163,7 +135,7 @@ class Window():
         self.main=TK.Frame(master)
         self.main.pack(fill=TK.BOTH)
         
-        self.difficulty = Variables.pre_game(Variables, self.main)
+        Difficulty_menu(self.main)
         
         
 class Difficulty_menu():
@@ -180,19 +152,40 @@ class Difficulty_menu():
         self.menu=TK.Frame(self.master)
         self.menu.pack()
         
-        self.easy_button = TK.Button(self.menu, text="Easy", width= 20, pady=5, command=lambda: self.start_game(5))
-        self.easy_button.pack()
-        
-        self.med_button = TK.Button(self.menu, text="Medium", width= 20, pady=5, command=lambda: self.start_game(10))
-        self.med_button.pack()
-        
-        self.hard_button = TK.Button(self.menu, text="Hard", width= 20, pady=5, command=lambda: self.start_game(20))
-        self.hard_button.pack()
+        TK.Button(self.menu, text="Easy", width= 20, pady=5, command=lambda: self.start_game(5)).pack()
+        TK.Button(self.menu, text="Medium", width= 20, pady=5, command=lambda: self.start_game(10)).pack()
+        TK.Button(self.menu, text="Hard", width= 20, pady=5, command=lambda: self.start_game(20)).pack()
+        TK.Button(self.menu, text="Exit", width= 20, pady=5, command=lambda: Variables.root.destroy()).pack()
         
     def start_game(self, y):
         Variables.difficulty = y
-        Variables.start_game(Variables, self.master)
         self.menu.destroy()
+        Variables.start_game(Variables, self.master)
+
+
+def check_choice():
+    time.sleep(1) #leaves both tiles visable for the player to see for a second.
+    
+    #Debug
+    #Variables.remainingTiles = 0
+    
+    choices = Variables.choices
+    
+    #if the tiles don't match, hide the value, and let the player click it again.
+    #otherwise clear the choices list, and decrement the remainingTiles counter.
+    if choices[0].text != choices[1].text:
+        choices[0].button['bg'] = "Black"
+        choices[0].button['state'] = "normal"
+        choices[1].button['bg'] = "Black"
+        choices[1].button['state'] = "normal"
+        Variables.choices = list()
+    else:
+        Variables.choices = list()
+        Variables.remainingTiles -=2
+
+    #if there are no tiles left, end the game.
+    if Variables.remainingTiles == 0:
+        Variables.play.end_game()
         
         
 root = TK.Tk()
