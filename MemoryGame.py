@@ -16,6 +16,9 @@ import tkinter as TK
 import time
 
 class Variables():
+    '''
+    This is a class to hold variables in so I don't have to declare globes.
+    '''
     difficulty = 0
     choices = list()
     remainingTiles = 0
@@ -29,6 +32,9 @@ class Variables():
 
 
 class Tile():
+    '''
+    Each one of the game Tiles is it's own object. I did it this way, so I can create tiles as needed to fill the board.
+    '''
     def __init__(self, master, text, row, column):
         self.text = text
         self.row = row
@@ -36,13 +42,14 @@ class Tile():
         
         self.master = master
         self.tileFrame = TK.Frame(master)
-        self.tileFrame.grid(row=self.row,column=self.column)
+        self.tileFrame.grid(row=self.row,column=self.column,padx=1,pady=1)
         
-        self.button = TK.Button(self.tileFrame, text=self.text, bg="Black", command=self.pressed)
-        self.button.pack(expand=True)
+        self.button = TK.Button(self.tileFrame, text=self.text, height=1, width=1, bg="Black", command=self.pressed)
+        self.button.pack()
         
     def pressed(self):
         self.button['bg'] = "White"
+        self.button['state'] = "disabled"
         print (self.text)
         if len(Variables.choices) == 0:
             Variables.choices.append(self)
@@ -100,7 +107,9 @@ class Play():
         choices = Variables.choices
         if choices[0].text != choices[1].text:
             choices[0].button['bg'] = "Black"
+            choices[0].button['state'] = "normal"
             choices[1].button['bg'] = "Black"
+            choices[1].button['state'] = "normal"
             Variables.choices = list()
         else:
             choices[0].button['state'] = "disabled"
@@ -115,7 +124,7 @@ class Play():
         for tile in self.gameTiles:
             tile.finish()
         
-        self.label = TK.Label(self.gameBoard, text = "!!!YOU WIN!!!")
+        self.label = TK.Label(self.gameBoard, text = "!!!YOU WON!!!")
         self.label.pack(fill=TK.BOTH)
 
         self.alertBox = TK.messagebox.askyesno("Continue", "Do you want to play again?")
