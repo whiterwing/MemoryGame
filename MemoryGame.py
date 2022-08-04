@@ -19,12 +19,14 @@ class Variables():
     difficulty = 0
     choices = list()
     remainingTiles = 0
+    root = None
     
     def pre_game(self, master):
         self.difficulty = Difficulty_menu(master)
     
     def start_game(self, master):
         self.play = Play(master)
+
 
 class Tile():
     def __init__(self, master, text, row, column):
@@ -113,15 +115,19 @@ class Play():
         for tile in self.gameTiles:
             tile.finish()
         
-            
-        #NOT WORKING
         self.label = TK.Label(self.gameBoard, text = "!!!YOU WIN!!!")
         self.label.pack(fill=TK.BOTH)
+
+        self.alertBox = TK.messagebox.askyesno("Continue", "Do you want to play again?")
         
-        time.sleep(5)
         self.gameBoard.destroy()
-        Difficulty_menu(self.master)
         
+        if self.alertBox:
+            Difficulty_menu(self.master)
+        else:
+            Variables.root.destroy()
+
+
 class Window():
     def __init__(self, master):
         '''
@@ -131,6 +137,7 @@ class Window():
         self.main.pack(fill=TK.BOTH)
         
         self.difficulty = Variables.pre_game(Variables, self.main)
+        
         
 class Difficulty_menu():
     def __init__(self, master):
@@ -164,5 +171,6 @@ class Difficulty_menu():
 root = TK.Tk()
 root.title("Memory")
 root.geometry("300x300")
+Variables.root = root
 main = Window(root)
 root.mainloop()
